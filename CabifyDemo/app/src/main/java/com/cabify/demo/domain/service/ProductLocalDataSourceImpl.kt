@@ -1,4 +1,4 @@
-package com.cabify.demo.data.service
+package com.cabify.demo.domain.service
 
 import com.cabify.demo.data.model.Product
 import com.cabify.demo.data.model.ProductDiscount

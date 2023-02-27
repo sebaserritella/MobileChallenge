@@ -1,4 +1,4 @@
-package com.cabify.demo.ui
+package com.cabify.demo.ui.home
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -19,11 +19,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.layout.DisplayFeature
 import com.cabify.demo.data.model.Product
+import com.cabify.demo.ui.HomeUIState
 import com.cabify.demo.ui.cart.ShoppingCartViewModel
 import com.cabify.demo.ui.components.CabifyProductListItem
 import com.cabify.demo.ui.components.DetailAppBar
 import com.cabify.demo.ui.components.SearchBar
-import com.cabify.demo.ui.home.HomeViewModel
 import com.cabify.demo.ui.utils.ContentType
 import com.google.accompanist.adaptive.HorizontalTwoPaneStrategy
 import com.google.accompanist.adaptive.TwoPane
@@ -42,31 +42,39 @@ fun ProductsScreen(
 
     val productLazyListState = rememberLazyListState()
 
-    if (contentType == ContentType.DUAL_PANE) {
-        TwoPane(
-            first = {
-                CabifyProductList(
-                    products = homeUIState.products, lazyListState = productLazyListState,
-                    shoppingCartViewModel = shoppingCartViewModel
+    when (homeUIState) {
+        HomeUIState.Loading -> {}
+        is HomeUIState.Success -> {
+            if (contentType == ContentType.DUAL_PANE) {
+                TwoPane(
+                    first = {
+                        CabifyProductList(
+                            lazyListState = productLazyListState,
+                            shoppingCartViewModel = shoppingCartViewModel,
+                            homeUIState = homeUIState
+                        )
+                    },
+                    second = {
+                        CabifyProductDetail(
+                            item = ((homeUIState as HomeUIState.Success).products.first()), isFullScreen = false
+                        )
+                    },
+                    strategy = HorizontalTwoPaneStrategy(splitFraction = 0.5f, gapWidth = 16.dp),
+                    displayFeatures = displayFeatures
                 )
-            },
-            second = {
-                CabifyProductDetail(
-                    item = (homeUIState.products.first()), isFullScreen = false
-                )
-            },
-            strategy = HorizontalTwoPaneStrategy(splitFraction = 0.5f, gapWidth = 16.dp),
-            displayFeatures = displayFeatures
-        )
-    } else {
-        Box(modifier = modifier.fillMaxSize()) {
-            SinglePaneContent(
-                productLazyListState = productLazyListState,
-                modifier = Modifier.fillMaxSize(),
-                shoppingCartViewModel = shoppingCartViewModel
-            )
+            } else {
+                Box(modifier = modifier.fillMaxSize()) {
+                    SinglePaneContent(
+                        productLazyListState = productLazyListState,
+                        modifier = Modifier.fillMaxSize(),
+                        shoppingCartViewModel = shoppingCartViewModel
+                    )
+                }
+            }
         }
     }
+
+
 }
 
 @RequiresApi(Build.VERSION_CODES.N)
@@ -80,44 +88,47 @@ fun SinglePaneContent(
     val homeUIState by homeViewModel.uiState.collectAsStateWithLifecycle()
 
     CabifyProductList(
-        products = homeUIState.products,
         lazyListState = productLazyListState,
         modifier = modifier,
-        shoppingCartViewModel = shoppingCartViewModel
+        shoppingCartViewModel = shoppingCartViewModel,
+        homeUIState = homeUIState
     )
 }
 
 @RequiresApi(Build.VERSION_CODES.N)
 @Composable
 fun CabifyProductList(
-    products: List<Product>,
     lazyListState: LazyListState,
     modifier: Modifier = Modifier,
-    shoppingCartViewModel: ShoppingCartViewModel
+    shoppingCartViewModel: ShoppingCartViewModel,
+    homeUIState: HomeUIState
 ) {
     LazyColumn(modifier = modifier, state = lazyListState) {
         item {
             SearchBar(modifier = Modifier.fillMaxWidth())
         }
-        if (products.isEmpty()) {
-            item {
-                CabifyProductListItem(
-                    productItem = Product(),
-                    shoppingCartViewModel = shoppingCartViewModel
-                )
+        when (homeUIState) {
+            HomeUIState.Loading -> {
+                item {
+                    CabifyProductListItem(
+                        productItem = Product(),
+                        shoppingCartViewModel = shoppingCartViewModel
+                    )
+                }
+                item {
+                    CabifyProductListItem(
+                        productItem = Product(),
+                        shoppingCartViewModel = shoppingCartViewModel
+                    )
+                }
             }
-            item {
-                CabifyProductListItem(
-                    productItem = Product(),
-                    shoppingCartViewModel = shoppingCartViewModel
-                )
-            }
-        } else {
-            items(items = products, key = { it.code }) { product ->
-                CabifyProductListItem(
-                    productItem = product,
-                    shoppingCartViewModel = shoppingCartViewModel
-                )
+            is HomeUIState.Success -> {
+                items(items = homeUIState.products, key = { it.code }) { product ->
+                    CabifyProductListItem(
+                        productItem = product,
+                        shoppingCartViewModel = shoppingCartViewModel
+                    )
+                }
             }
         }
     }

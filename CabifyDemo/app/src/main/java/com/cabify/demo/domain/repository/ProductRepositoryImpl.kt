@@ -1,17 +1,16 @@
-package com.cabify.demo.data.repository
+package com.cabify.demo.domain.repository
 
 import com.cabify.demo.data.model.ResponseApi
-import com.cabify.demo.data.service.ProductLocalDataSource
-import com.cabify.demo.data.service.ProductLocalDataSourceImpl
-import com.cabify.demo.data.service.ProductRemoteDataSource
-import com.cabify.demo.data.service.ProductRemoteDataSourceImpl
+import com.cabify.demo.domain.service.ProductLocalDataSource
+import com.cabify.demo.domain.service.ProductLocalDataSourceImpl
+import com.cabify.demo.domain.service.ProductRemoteDataSource
+import com.cabify.demo.domain.service.ProductRemoteDataSourceImpl
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
 class ProductRepositoryImpl : ProductRepository {
     private val remoteDataSource: ProductRemoteDataSource = ProductRemoteDataSourceImpl()
     private val localDataSource: ProductLocalDataSource = ProductLocalDataSourceImpl()
-    private val refreshIntervalMs: Long = 5000
 
     override fun getProducts(): Flow<ResponseApi> = flow {
         val latestProducts = remoteDataSource.getProducts()
@@ -19,6 +18,5 @@ class ProductRepositoryImpl : ProductRepository {
     }
 
     override fun getLocalProducts(): ResponseApi = localDataSource.getProducts()
-
 
 }

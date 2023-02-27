@@ -24,6 +24,7 @@ import androidx.window.layout.DisplayFeature
 import androidx.window.layout.FoldingFeature
 import com.cabify.demo.ui.cart.ShoppingCartContent
 import com.cabify.demo.ui.cart.ShoppingCartViewModel
+import com.cabify.demo.ui.home.ProductsScreen
 import com.cabify.demo.ui.navigation.*
 import com.cabify.demo.ui.utils.*
 import org.koin.androidx.compose.koinViewModel

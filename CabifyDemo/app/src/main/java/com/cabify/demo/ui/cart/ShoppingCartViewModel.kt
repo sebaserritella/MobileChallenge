@@ -1,10 +1,7 @@
 package com.cabify.demo.ui.cart
 
 import android.util.Log
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cabify.demo.data.model.Product
@@ -13,9 +10,11 @@ import kotlinx.coroutines.flow.*
 import java.math.BigDecimal
 import java.util.*
 
-class ShoppingCartViewModel : ViewModel() {
+class ShoppingCartViewModel() : ViewModel() {
 
     var shoppingCartItems = mutableStateListOf<ShoppingCartItem>()
+
+    val cartUiState: MutableState<CartUIState> = mutableStateOf(CartUIState.Zero)
 
     val shoppingCartTotalPriceState: State<BigDecimal>
         get() = mutableStateOf(shoppingCartItems.sumOf { it.cartItemProductData.amountTotal() })
@@ -54,6 +53,8 @@ class ShoppingCartViewModel : ViewModel() {
             )
         }
 
+        cartUiState.value = CartUIState.Success(cant = getQuantity())
+
         Log.d(this.toString(), "Item added: " + code + " Cart Size: " + shoppingCartItems.size)
         Log.d(this.toString(), "Price :" + shoppingCartTotalPriceState.value.toString())
     }
@@ -66,6 +67,7 @@ class ShoppingCartViewModel : ViewModel() {
                 }
                 is ShoppingCartStates.RemoveProductItemFromShoppingCartEvent -> {
                     removeProductItemFromShoppingCart(shoppingCartStateEvent.productId)
+                    cartUiState.value = CartUIState.Success(cant = getQuantity())
                 }
             }
         }.launchIn(viewModelScope)
@@ -109,4 +111,12 @@ class ShoppingCartViewModel : ViewModel() {
             quantity = quantity,
         ), onShoppingCartStateEvent = onShoppingCartStateEvent
     )
+
+    private fun getQuantity(): Int {
+        var cant = 0
+        for (value in shoppingCartItems) {
+            cant += value.cartItemProductData.quantity
+        }
+        return cant
+    }
 }

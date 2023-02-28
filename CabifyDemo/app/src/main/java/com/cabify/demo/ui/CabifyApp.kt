@@ -12,6 +12,7 @@ import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -22,6 +23,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.window.layout.DisplayFeature
 import androidx.window.layout.FoldingFeature
+import com.cabify.demo.ui.cart.CartUIState
 import com.cabify.demo.ui.cart.ShoppingCartContent
 import com.cabify.demo.ui.cart.ShoppingCartViewModel
 import com.cabify.demo.ui.home.ProductsScreen
@@ -32,7 +34,8 @@ import org.koin.androidx.compose.koinViewModel
 @RequiresApi(Build.VERSION_CODES.N)
 @Composable
 fun CabifyApp(
-    windowSize: WindowSizeClass, displayFeatures: List<DisplayFeature>
+    windowSize: WindowSizeClass,
+    displayFeatures: List<DisplayFeature>
 ) {
     /**
      * This will help us select type of navigation and content type depending on window size and
@@ -149,7 +152,7 @@ private fun NavigationWrapper(
                 ModalNavigationDrawerContent(
                     selectedDestination = selectedDestination,
                     navigationContentPosition = navigationContentPosition,
-                    navigateToTopLevelDestination = navigationActions::navigateTo,
+                    navigateToTopLevelDestination = navigationActions::navigateTo
                 )
             },
         ) {
@@ -178,6 +181,8 @@ fun CabifyAppContent(
     selectedDestination: String,
     navigateToTopLevelDestination: (TopLevelDestination) -> Unit
 ) {
+    val shoppingCartViewModel = koinViewModel<ShoppingCartViewModel>()
+
     Row(modifier = modifier.fillMaxSize()) {
         AnimatedVisibility(visible = navigationType == NavigationType.NAVIGATION_RAIL) {
             NavigationRail(
@@ -195,12 +200,14 @@ fun CabifyAppContent(
                 navController = navController,
                 contentType = contentType,
                 displayFeatures = displayFeatures,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                shoppingCartViewModel
             )
             AnimatedVisibility(visible = navigationType == NavigationType.BOTTOM_NAVIGATION) {
                 CabifyBottomNavigationBar(
                     selectedDestination = selectedDestination,
-                    navigateToTopLevelDestination = navigateToTopLevelDestination
+                    navigateToTopLevelDestination = navigateToTopLevelDestination,
+                    cartUIState = shoppingCartViewModel.cartUiState
                 )
             }
         }
@@ -213,13 +220,14 @@ private fun NavHost(
     navController: NavHostController,
     contentType: ContentType,
     displayFeatures: List<DisplayFeature>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    shoppingCartViewModel : ShoppingCartViewModel
 ) {
-    val shoppingCartViewModel = koinViewModel<ShoppingCartViewModel>()
+
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = CabifyRoute.PRODUCTS,
+        startDestination = CabifyRoute.PRODUCTS
     ) {
         composable(CabifyRoute.PRODUCTS) {
             ProductsScreen(

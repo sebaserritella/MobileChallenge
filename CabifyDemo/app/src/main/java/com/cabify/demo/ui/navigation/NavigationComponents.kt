@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MenuOpen
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -17,10 +18,13 @@ import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.offset
 import com.cabify.demo.R
+import com.cabify.demo.ui.cart.CartUIState
 import com.cabify.demo.ui.utils.NavigationContentPosition
 
 @Composable
@@ -117,19 +121,58 @@ fun NavigationRail(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CabifyBottomNavigationBar(
-    selectedDestination: String, navigateToTopLevelDestination: (TopLevelDestination) -> Unit
+    selectedDestination: String,
+    navigateToTopLevelDestination: (TopLevelDestination) -> Unit,
+    cartUIState: State<CartUIState>
 ) {
     NavigationBar(modifier = Modifier.fillMaxWidth()) {
-        TOP_LEVEL_DESTINATIONS.forEach { cabifyDestination ->
-            NavigationBarItem(selected = selectedDestination == cabifyDestination.route,
-                onClick = { navigateToTopLevelDestination(cabifyDestination) },
+        TOP_LEVEL_DESTINATIONS.forEach { destination ->
+            NavigationBarItem(selected = selectedDestination == destination.route,
+                onClick = { navigateToTopLevelDestination(destination) },
                 icon = {
-                    Icon(
-                        imageVector = cabifyDestination.selectedIcon,
-                        contentDescription = stringResource(id = cabifyDestination.iconTextId)
-                    )
+                    when (cartUIState.value) {
+                        CartUIState.Zero -> {
+                            Icon(
+                                imageVector = destination.selectedIcon,
+                                contentDescription = stringResource(id = destination.iconTextId)
+                            )
+                        }
+                        is CartUIState.Success -> {
+                            val cartItems = (cartUIState.value as CartUIState.Success).cant
+
+                            if (destination.route == CabifyRoute.SHOPPINGCART) {
+                                if (cartItems == 0) {
+                                    Icon(
+                                        imageVector = destination.selectedIcon,
+                                        contentDescription = stringResource(id = destination.iconTextId)
+                                    )
+                                } else {
+                                    BadgedBox(badge = {
+                                        Badge {
+                                            Text(cartItems.toString(),
+                                                modifier = Modifier.semantics {
+                                                    contentDescription =
+                                                        "$cartItems items in the cart"
+                                                })
+                                        }
+                                    }) {
+                                        Icon(
+                                            imageVector = destination.selectedIcon,
+                                            contentDescription = stringResource(id = destination.iconTextId)
+                                        )
+                                    }
+                                }
+                            } else {
+                                Icon(
+                                    imageVector = destination.selectedIcon,
+                                    contentDescription = stringResource(id = destination.iconTextId)
+                                )
+                            }
+                        }
+                    }
                 })
         }
     }

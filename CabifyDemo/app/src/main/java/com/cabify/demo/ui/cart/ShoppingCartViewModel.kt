@@ -53,8 +53,6 @@ class ShoppingCartViewModel : ViewModel() {
             )
         }
 
-
-
         cartUiState.value =
             CartUIState.Success(cant = getQuantity(), shoppingCartItems = shoppingCartItems)
 
@@ -90,20 +88,17 @@ class ShoppingCartViewModel : ViewModel() {
     }
 
     fun decrementItemToCart(code: String) {
-        shoppingCartItems.firstOrNull { x -> x.cartItemProductData.code == code }
-            ?.let { item ->
+        shoppingCartItems.firstOrNull { x -> x.cartItemProductData.code == code }?.let { item ->
 
                 if (item.cartItemProductData.quantity == 1) {
                     removeProductItemFromShoppingCart(code)
-                } else
-                    if (item.cartItemProductData.quantity > 1) {
-                        item.cartItemProductData.quantity -= 1
-                    }
+                } else if (item.cartItemProductData.quantity > 1) {
+                    item.cartItemProductData.quantity -= 1
+                }
             }
 
         cartUiState.value = CartUIState.Success(
-            cant = getQuantity(),
-            shoppingCartItems = shoppingCartItems
+            cant = getQuantity(), shoppingCartItems = shoppingCartItems
         )
     }
 

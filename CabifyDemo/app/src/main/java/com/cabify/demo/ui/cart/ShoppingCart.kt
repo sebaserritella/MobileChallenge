@@ -27,7 +27,6 @@ import com.cabify.demo.R
 import com.cabify.demo.data.model.Product
 import com.cabify.demo.ui.cart.Buttons.CTAButtonGreen
 import com.cabify.demo.ui.utils.AlertDialog.StartCashOutProcess
-import java.math.BigDecimal
 import java.util.*
 
 @RequiresApi(Build.VERSION_CODES.N)
@@ -171,7 +170,8 @@ fun CartListItem(
                 }
                 Column(
                     modifier = Modifier
-                        .weight(2f).fillMaxWidth()
+                        .weight(2f)
+                        .fillMaxWidth()
                         .padding(vertical = 8.dp)
                 ) {
                     Row(modifier = Modifier.align(Alignment.End)) {

@@ -10,7 +10,8 @@ import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Remove
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -24,12 +25,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.cabify.demo.R
 import com.cabify.demo.data.model.Product
-import com.cabify.demo.data.model.ProductDiscount
 import com.cabify.demo.ui.cart.Buttons.CTAButtonGreen
-import com.cabify.demo.ui.cart.Image.CartProductIcon
 import com.cabify.demo.ui.utils.AlertDialog.StartCashOutProcess
 import java.math.BigDecimal
-import java.math.RoundingMode
 import java.util.*
 
 @RequiresApi(Build.VERSION_CODES.N)
@@ -37,18 +35,14 @@ import java.util.*
 fun ShoppingCartContent(
     shoppingCartViewModel: ShoppingCartViewModel
 ) {
-    val shoppingCartItemList: List<ShoppingCartItem> =
-        shoppingCartViewModel.shoppingCartItems
     val totalPrice by shoppingCartViewModel.shoppingCartTotalPriceState
     val isCtaButtonEnabled by shoppingCartViewModel.isCtaButtonEnabledState
     val productLazyListState = rememberLazyListState()
 
     ShoppingCartContent(
-        shoppingCartItemList = shoppingCartItemList,
-        totalPrice = totalPrice,
         lazyListState = productLazyListState,
         isCtaButtonEnabled = isCtaButtonEnabled,
-        startCashOutProcess = shoppingCartViewModel::onOpenDialogClicked
+        shoppingCartViewModel
     )
 
     val showDialogState: Boolean by shoppingCartViewModel.showDialog.collectAsState()
@@ -64,16 +58,14 @@ fun ShoppingCartContent(
 @RequiresApi(Build.VERSION_CODES.N)
 @Composable
 fun ShoppingCartContent(
-    shoppingCartItemList: List<ShoppingCartItem>,
-    totalPrice: BigDecimal,
     lazyListState: LazyListState,
     isCtaButtonEnabled: Boolean,
-    startCashOutProcess: () -> Unit,
+    shoppingCartViewModel: ShoppingCartViewModel
 ) {
     Column {
         ShoppingCartHeader()
         ShoppingCartList(
-            lazyListState, shoppingCartItemList, totalPrice, isCtaButtonEnabled, startCashOutProcess
+            lazyListState, isCtaButtonEnabled, shoppingCartViewModel
         )
     }
 }
@@ -110,21 +102,30 @@ fun ShoppingCartHeaderPreview() {
 @Composable
 fun ShoppingCartList(
     lazyListState: LazyListState,
-    shoppingCartItemList: List<ShoppingCartItem>,
-    totalPrice: BigDecimal,
     isCtaButtonEnabled: Boolean,
-    startCashOutProcess: () -> Unit
+    shoppingCartViewModel: ShoppingCartViewModel
 ) {
-    LazyColumn(modifier = Modifier.padding(top = 12.dp, bottom = 12.dp), state = lazyListState) {
+    if (shoppingCartViewModel.cartUiState.value is CartUIState.Success) {
+        val shoppingCartItemList: List<ShoppingCartItem> =
+            (shoppingCartViewModel.cartUiState.value as CartUIState.Success).shoppingCartItems
 
-        items(items = shoppingCartItemList) { shoppingCartItem ->
-            CartListItem(
-                cartItemProductData = shoppingCartItem.cartItemProductData,
-                removeProductItemFromCart = shoppingCartItem::removeProductItemFromShoppingCart
-            )
-        }
-        item {
-            ShoppingCartBottom(totalPrice, isCtaButtonEnabled, startCashOutProcess)
+        LazyColumn(
+            modifier = Modifier.padding(top = 12.dp, bottom = 12.dp), state = lazyListState
+        ) {
+            items(items = shoppingCartItemList) { shoppingCartItem ->
+                CartListItem(cartItemProductData = shoppingCartItem.cartItemProductData,
+                    decrementProduct = { shoppingCartViewModel.decrementItemToCart(shoppingCartItem.cartItemProductData.code) },
+                    incrementProductToCart = {
+                        shoppingCartViewModel.incrementItemToCart(
+                            shoppingCartItem.cartItemProductData.code
+                        )
+                    })
+            }
+            item {
+                ShoppingCartBottom(
+                    shoppingCartViewModel, isCtaButtonEnabled
+                ) { shoppingCartViewModel.onOpenDialogClicked() }
+            }
         }
     }
 }
@@ -132,7 +133,7 @@ fun ShoppingCartList(
 @RequiresApi(Build.VERSION_CODES.N)
 @Composable
 fun CartListItem(
-    cartItemProductData: Product, removeProductItemFromCart: () -> Unit
+    cartItemProductData: Product, decrementProduct: () -> Unit, incrementProductToCart: () -> Unit
 ) {
     val symbol = Currency.getInstance(Locale.getDefault()).symbol
 
@@ -143,15 +144,15 @@ fun CartListItem(
                 .padding(20.dp)
         ) {
             Row(modifier = Modifier.fillMaxWidth()) {
-                this@ShoppingCartItemBackground.CartProductIcon(drawable = R.drawable.avatar_express)
+                //this@ShoppingCartItemBackground.CartProductIcon(drawable = R.drawable.avatar_express)
                 Column(
                     modifier = Modifier
-                        .weight(1f)
-                        .padding(horizontal = 12.dp, vertical = 4.dp),
+                        .weight(3f)
+                        .padding(4.dp),
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text(text = cartItemProductData.name)
-                    Row(modifier = Modifier.align(Alignment.CenterHorizontally)) {
+                    Row(/*modifier = Modifier.align(Alignment.CenterHorizontally)*/) {
                         Text(
                             text = stringResource(
                                 R.string.cart_quantity, cartItemProductData.quantity
@@ -168,18 +169,36 @@ fun CartListItem(
                         )
                     }
                 }
-                Column {
-                    IconButton(
-                        onClick = removeProductItemFromCart::invoke,
-                        modifier = Modifier
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.surface)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Remove,
-                            contentDescription = stringResource(id = R.string.remove_button),
-                            tint = MaterialTheme.colorScheme.outline
-                        )
+                Column(
+                    modifier = Modifier
+                        .weight(2f).fillMaxWidth()
+                        .padding(vertical = 8.dp)
+                ) {
+                    Row(modifier = Modifier.align(Alignment.End)) {
+                        IconButton(
+                            onClick = decrementProduct,
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .background(MaterialTheme.colorScheme.surface)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.Remove,
+                                contentDescription = stringResource(id = R.string.remove_button),
+                                tint = MaterialTheme.colorScheme.outline
+                            )
+                        }
+                        IconButton(
+                            onClick = incrementProductToCart,
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .background(MaterialTheme.colorScheme.surface)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.Add,
+                                contentDescription = stringResource(id = R.string.add),
+                                tint = MaterialTheme.colorScheme.outline
+                            )
+                        }
                     }
                 }
             }
@@ -194,40 +213,30 @@ fun CartListItem(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.N)
 @Preview(showBackground = true)
 @Composable
 fun ShoppingCartListPreview(
     lazyListState: LazyListState,
-    totalPrice: BigDecimal = BigDecimal.ZERO,
     isCtaButtonEnabled: Boolean = false,
-    startCashOutProcess: () -> Unit
+    shoppingCartViewModel: ShoppingCartViewModel,
+    startCashOutProcess: () -> Unit,
+    decrementProductItemFromShoppingCart: () -> Unit,
+    incrementProductItemToShoppingCart: () -> Unit
 ) {
     ShoppingCartList(
-        lazyListState = lazyListState, listOf(
-            ShoppingCartItem(cartItemProductData = Product(
-                productId = UUID.randomUUID(),
-                code = ProductDiscount.VOUCHER.name,
-                name = ProductDiscount.VOUCHER.name,
-                price = BigDecimal(5.0).setScale(2, RoundingMode.DOWN),
-                quantity = 2
-            ),
-                onShoppingCartStateEvent = remember { mutableStateOf(ShoppingCartStates.Initial) }),
-            ShoppingCartItem(cartItemProductData = Product(
-                productId = UUID.randomUUID(),
-                code = ProductDiscount.TSHIRT.name,
-                name = ProductDiscount.TSHIRT.name,
-                price = BigDecimal(20.0).setScale(2, RoundingMode.DOWN),
-                quantity = 2
-            ),
-                onShoppingCartStateEvent = remember { mutableStateOf(ShoppingCartStates.Initial) })
-        ), totalPrice, isCtaButtonEnabled, startCashOutProcess
+        lazyListState = lazyListState,
+        isCtaButtonEnabled,
+        shoppingCartViewModel = shoppingCartViewModel
     )
 }
 
 @RequiresApi(Build.VERSION_CODES.N)
 @Composable
 fun ShoppingCartBottom(
-    totalPrice: BigDecimal, isCtaButtonEnabled: Boolean, startCashOutProcess: () -> Unit
+    shoppingCartViewModel: ShoppingCartViewModel,
+    isCtaButtonEnabled: Boolean,
+    startCashOutProcess: () -> Unit
 ) {
     Divider(modifier = Modifier.padding(top = 8.dp, bottom = 8.dp))
     CTAButtonGreen(
@@ -237,7 +246,9 @@ fun ShoppingCartBottom(
             val symbol = Currency.getInstance(Locale.getDefault()).symbol
 
             stringResource(
-                R.string.shopping_cart_cta_label, totalPrice, symbol
+                R.string.shopping_cart_cta_label,
+                shoppingCartViewModel.shoppingCartTotalPriceState.value,
+                symbol
             )
         }, isCtaButtonEnabled = isCtaButtonEnabled, onButtonClickCallback = startCashOutProcess
     )

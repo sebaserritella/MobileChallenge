@@ -1,8 +1,7 @@
 package com.cabify.demo.ui.cart
 
-import java.util.*
-
 sealed class ShoppingCartStates {
     object Initial : ShoppingCartStates()
-    data class RemoveProductItemFromShoppingCartEvent(val productId: UUID) : ShoppingCartStates()
+    data class IncrementProductItemFromShoppingCartEvent(val code: String) : ShoppingCartStates()
+    data class DecrementProductItemFromShoppingCartEvent(val code: String) : ShoppingCartStates()
 }

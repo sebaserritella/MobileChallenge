@@ -10,8 +10,17 @@ class ShoppingCartItem(
 
     override fun removeProductItemFromShoppingCart() {
         super.removeProductItemFromShoppingCart()
-        onShoppingCartStateEvent.value =
-            ShoppingCartStates.RemoveProductItemFromShoppingCartEvent(cartItemProductData.productId)
+        onShoppingCartStateEvent.value = ShoppingCartStates.DecrementProductItemFromShoppingCartEvent(cartItemProductData.code)
+    }
+
+    override fun decrementProductItemFromShoppingCart() {
+        super.decrementProductItemFromShoppingCart()
+        //onShoppingCartStateEvent.value = ShoppingCartStates.DecrementProductItemFromShoppingCartEvent(cartItemProductData.code)
+    }
+
+    override fun incrementProductItemToShoppingCart() {
+        super.incrementProductItemToShoppingCart()
+        //onShoppingCartStateEvent.value = ShoppingCartStates.IncrementProductItemFromShoppingCartEvent(cartItemProductData.code)
     }
 }
 

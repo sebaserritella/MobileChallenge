@@ -1,5 +1,7 @@
 package com.cabify.demo.ui.cart
 
+import androidx.compose.runtime.snapshots.SnapshotStateList
+
 sealed interface CartUIState {
     /**
      * The products is still loading.
@@ -11,14 +13,8 @@ sealed interface CartUIState {
      */
     data class Success(
         /**
-         * The list of products.
-         */
-        //val products: List<ShoppingCartItem>,
-
-        /**
          * The quantity of products in the cart.
          */
-        val cant: Int = 0
-
+        val cant: Int = 0, val shoppingCartItems: SnapshotStateList<ShoppingCartItem>
     ) : CartUIState
 }

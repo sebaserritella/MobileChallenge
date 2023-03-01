@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.*
 import java.math.BigDecimal
 import java.util.*
 
-class ShoppingCartViewModel() : ViewModel() {
+class ShoppingCartViewModel : ViewModel() {
 
     var shoppingCartItems = mutableStateListOf<ShoppingCartItem>()
 
@@ -53,7 +53,10 @@ class ShoppingCartViewModel() : ViewModel() {
             )
         }
 
-        cartUiState.value = CartUIState.Success(cant = getQuantity())
+
+
+        cartUiState.value =
+            CartUIState.Success(cant = getQuantity(), shoppingCartItems = shoppingCartItems)
 
         Log.d(this.toString(), "Item added: " + code + " Cart Size: " + shoppingCartItems.size)
         Log.d(this.toString(), "Price :" + shoppingCartTotalPriceState.value.toString())
@@ -65,17 +68,43 @@ class ShoppingCartViewModel() : ViewModel() {
                 is ShoppingCartStates.Initial -> {
                     // nothing to do
                 }
-                is ShoppingCartStates.RemoveProductItemFromShoppingCartEvent -> {
-                    removeProductItemFromShoppingCart(shoppingCartStateEvent.productId)
-                    cartUiState.value = CartUIState.Success(cant = getQuantity())
+
+                is ShoppingCartStates.DecrementProductItemFromShoppingCartEvent -> {
+                    decrementItemToCart(shoppingCartStateEvent.code)
+                }
+
+                is ShoppingCartStates.IncrementProductItemFromShoppingCartEvent -> {
+                    addItemToCart(shoppingCartStateEvent.code, "", BigDecimal.ZERO)
                 }
             }
         }.launchIn(viewModelScope)
 
-    private fun removeProductItemFromShoppingCart(productId: UUID) {
-        shoppingCartItems.firstOrNull { it.cartItemProductData.productId == productId }?.also {
+    private fun removeProductItemFromShoppingCart(code: String) {
+        shoppingCartItems.firstOrNull { it.cartItemProductData.code == code }?.also {
             shoppingCartItems.remove(it)
         }
+    }
+
+    fun incrementItemToCart(code: String) {
+        addItemToCart(code, "", BigDecimal.ZERO)
+    }
+
+    fun decrementItemToCart(code: String) {
+        shoppingCartItems.firstOrNull { x -> x.cartItemProductData.code == code }
+            ?.let { item ->
+
+                if (item.cartItemProductData.quantity == 1) {
+                    removeProductItemFromShoppingCart(code)
+                } else
+                    if (item.cartItemProductData.quantity > 1) {
+                        item.cartItemProductData.quantity -= 1
+                    }
+            }
+
+        cartUiState.value = CartUIState.Success(
+            cant = getQuantity(),
+            shoppingCartItems = shoppingCartItems
+        )
     }
 
     private fun shoppingCartItemsFakeRepository() = listOf(

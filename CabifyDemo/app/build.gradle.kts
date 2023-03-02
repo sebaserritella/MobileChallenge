@@ -133,4 +133,21 @@ dependencies {
     implementation("io.insert-koin:koin-core:3.3.3")
     implementation("io.insert-koin:koin-androidx-compose:3.3.0")
     implementation("io.insert-koin:koin-android:3.3.2")
+
+    // Required -- JUnit 4 framework
+    testImplementation("junit:junit:4.13.2")
+    // Optional -- Robolectric environment
+    testImplementation("androidx.test:core:1.5.0")
+    // Optional -- Mockito framework
+    //testImplementation("org.mockito:mockito-core:$mockitoVersion")
+    // Optional -- mockito-kotlin
+    //testImplementation("org.mockito.kotlin:mockito-kotlin:$mockitoKotlinVersion")
+    // Optional -- Mockk framework
+    //testImplementation("io.mockk:mockk:$mockkVersion")
+
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
+
+    testImplementation("io.mockk:mockk:1.11.0")
+    testImplementation("org.mockito:mockito-inline:2.23.4")
 }

@@ -1,7 +1,7 @@
-package com.cabify.demo.domain.usecase
+package com.cabify.demo.data.domain.usecase
 
 import com.cabify.demo.data.model.Product
-import com.cabify.demo.domain.repository.ProductRepository
+import com.cabify.demo.data.domain.repository.ProductRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

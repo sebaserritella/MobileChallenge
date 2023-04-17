@@ -1,6 +1,7 @@
 package com.cabify.demo.ui.cart
 
 import androidx.compose.runtime.MutableState
+import com.cabify.demo.data.model.ItemCartModel
 import com.cabify.demo.data.model.Product
 
 class ShoppingCartItem(

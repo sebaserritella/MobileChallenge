@@ -1,4 +1,4 @@
-package com.cabify.demo.domain.service
+package com.cabify.demo.data.domain.service
 
 import com.cabify.demo.BuildConfig.BASE_URL
 import com.cabify.demo.data.model.ResponseApi

@@ -3,7 +3,7 @@ package com.cabify.demo.ui.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cabify.demo.data.model.Product
-import com.cabify.demo.domain.usecase.GetProductUseCase
+import com.cabify.demo.data.domain.usecase.GetProductUseCase
 import com.cabify.demo.ui.HomeUIState
 import kotlinx.coroutines.flow.*
 

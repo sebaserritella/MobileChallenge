@@ -1,10 +1,10 @@
-package com.cabify.demo.domain.repository
+package com.cabify.demo.data.domain.repository
 
 import com.cabify.demo.data.model.ResponseApi
-import com.cabify.demo.domain.service.ProductLocalDataSource
-import com.cabify.demo.domain.service.ProductLocalDataSourceImpl
-import com.cabify.demo.domain.service.ProductRemoteDataSource
-import com.cabify.demo.domain.service.ProductRemoteDataSourceImpl
+import com.cabify.demo.data.domain.service.ProductLocalDataSource
+import com.cabify.demo.data.domain.service.ProductLocalDataSourceImpl
+import com.cabify.demo.data.domain.service.ProductRemoteDataSource
+import com.cabify.demo.data.domain.service.ProductRemoteDataSourceImpl
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 

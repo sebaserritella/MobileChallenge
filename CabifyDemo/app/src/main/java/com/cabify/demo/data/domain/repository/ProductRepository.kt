@@ -1,4 +1,4 @@
-package com.cabify.demo.domain.repository
+package com.cabify.demo.data.domain.repository
 
 import com.cabify.demo.data.model.ResponseApi
 import kotlinx.coroutines.flow.Flow

@@ -2,10 +2,9 @@ package com.cabify.demo.repository
 
 import com.cabify.demo.data.model.Product
 import com.cabify.demo.data.model.ResponseApi
-import com.cabify.demo.domain.repository.ProductRepositoryImpl
+import com.cabify.demo.data.domain.repository.ProductRepositoryImpl
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.runTest
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test

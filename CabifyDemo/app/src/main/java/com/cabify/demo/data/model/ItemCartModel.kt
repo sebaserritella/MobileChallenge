@@ -1,4 +1,4 @@
-package com.cabify.demo.ui.cart
+package com.cabify.demo.data.model
 
 import android.util.Log
 import com.cabify.demo.data.model.Product

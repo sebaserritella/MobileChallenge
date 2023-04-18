@@ -96,8 +96,8 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
 
     // custom declaration for latest versions of material 3 and adaptive accompanist
-    implementation("androidx.compose.material3:material3:1.1.0-alpha06")
-    implementation("com.google.accompanist:accompanist-adaptive:0.29.1-alpha")
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.accompanist.adaptive)
 
     implementation(libs.androidx.compose.materialWindow)
     implementation(libs.androidx.compose.material.iconsExtended)
@@ -123,21 +123,26 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
     // Retrofit
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
-    implementation("com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:0.9.2")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-    implementation("com.squareup.okhttp3:logging-interceptor:4.9.0")
-    implementation("com.squareup.moshi:moshi:1.9.3")
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.converter.moshi)
+    implementation(libs.retrofit.converter.gson)
+    implementation(libs.retrofit.coroutines)
 
-    implementation("io.insert-koin:koin-core:3.3.3")
-    implementation("io.insert-koin:koin-androidx-compose:3.3.0")
-    implementation("io.insert-koin:koin-android:3.3.2")
+    implementation(libs.okhttp.logging)
+    implementation(libs.moshi)
+
+    //koin
+    implementation(libs.koin.core)
+    implementation(libs.koin.android)
+    implementation(libs.koin.compose)
+    //implementation("io.insert-koin:koin-core:3.3.3")
+    //implementation("io.insert-koin:koin-androidx-compose:3.3.3")
+    //implementation("io.insert-koin:koin-android:3.3.3")
 
     // Required -- JUnit 4 framework
-    testImplementation("junit:junit:4.13.2")
+    //testImplementation("junit:junit:4.13.2")
     // Optional -- Robolectric environment
-    testImplementation("androidx.test:core:1.5.0")
+    //testImplementation("androidx.test:core:1.5.0")
     // Optional -- Mockito framework
     //testImplementation("org.mockito:mockito-core:$mockitoVersion")
     // Optional -- mockito-kotlin
@@ -145,9 +150,15 @@ dependencies {
     // Optional -- Mockk framework
     //testImplementation("io.mockk:mockk:$mockkVersion")
 
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
+    //testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
+    //testImplementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.kotlinx.coroutines.datetime)
 
-    testImplementation("io.mockk:mockk:1.11.0")
-    testImplementation("org.mockito:mockito-inline:2.23.4")
+
+    //testImplementation("io.mockk:mockk:1.11.0")
+    //testImplementation("org.mockito:mockito-inline:2.23.4")
+    testImplementation(libs.mock)
+    testImplementation(libs.mockito)
 }

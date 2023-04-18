@@ -5,7 +5,7 @@ import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cabify.demo.data.model.Product
-import com.cabify.demo.data.model.ProductDiscount
+import com.cabify.demo.data.model.ProductNames
 import kotlinx.coroutines.flow.*
 import java.math.BigDecimal
 import java.util.*
@@ -105,20 +105,20 @@ class ShoppingCartViewModel : ViewModel() {
     private fun shoppingCartItemsFakeRepository() = listOf(
         toShoppingCartItemViewModel(
             UUID.randomUUID(),
-            ProductDiscount.VOUCHER.name,
-            ProductDiscount.VOUCHER.name,
+            ProductNames.VOUCHER.name,
+            ProductNames.VOUCHER.name,
             BigDecimal.valueOf(5.0),
             3
         ), toShoppingCartItemViewModel(
             UUID.randomUUID(),
-            ProductDiscount.TSHIRT.name,
-            ProductDiscount.TSHIRT.name,
+            ProductNames.TSHIRT.name,
+            ProductNames.TSHIRT.name,
             BigDecimal.valueOf(20.0),
             6
         ), toShoppingCartItemViewModel(
             UUID.randomUUID(),
-            ProductDiscount.MUG.name,
-            ProductDiscount.MUG.name,
+            ProductNames.MUG.name,
+            ProductNames.MUG.name,
             BigDecimal.valueOf(7.50),
             2
         )

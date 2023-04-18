@@ -1,8 +1,6 @@
 package com.cabify.demo.data.domain.service
 
-import com.cabify.demo.data.model.Product
-import com.cabify.demo.data.model.ProductDiscount
-import com.cabify.demo.data.model.ResponseApi
+import com.cabify.demo.data.model.*
 import java.math.BigDecimal
 import java.util.*
 
@@ -12,21 +10,21 @@ class ProductLocalDataSourceImpl : ProductLocalDataSource {
 
         val response = ResponseApi(
             listOf(
-                Product(
+                Voucher(
                     productId = UUID.randomUUID(),
-                    code = ProductDiscount.VOUCHER.name,
+                    code = ProductNames.VOUCHER.name,
                     name = "Cabify Voucher",
                     price = BigDecimal.valueOf(5)
                 ),
                 Product(
                     productId = UUID.randomUUID(),
-                    code = ProductDiscount.MUG.name,
+                    code = ProductNames.MUG.name,
                     name = "Cabify Coffee Mug",
                     price = BigDecimal.valueOf(7.5)
                 ),
-                Product(
+                Tshirt(
                     productId = UUID.randomUUID(),
-                    code = ProductDiscount.TSHIRT.name,
+                    code = ProductNames.TSHIRT.name,
                     name = "Cabify T-shirt",
                     price = BigDecimal.valueOf(20)
                 ),

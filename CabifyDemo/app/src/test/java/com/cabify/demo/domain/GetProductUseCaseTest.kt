@@ -1,11 +1,15 @@
 package com.cabify.demo.domain
 
-import com.cabify.demo.data.model.Product
 import com.cabify.demo.data.domain.repository.ProductRepositoryImpl
 import com.cabify.demo.data.domain.usecase.GetProductUseCase
+import com.cabify.demo.data.model.Product
+import com.cabify.demo.data.model.Tshirt
+import com.cabify.demo.data.model.Voucher
 import com.cabify.demo.util.MainDispatcherRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
@@ -34,9 +38,22 @@ class GetProductUseCaseTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun whenNoFilters_allNewsResourcesAreReturned() = runTest {
+    fun whenNoFilters_allNewsResourcesAreReturned() = runBlocking {
         val expected = sampleProducts
-        val list = useCase.invoke()
+        val list = useCase.invoke().first()
+
+        Assert.assertEquals(
+            expected,
+            list,
+        )
+    }
+
+    @Test
+    fun `fetch products should be 3`() = runBlocking {
+        val expected = sampleProducts.count()
+        val list = launch {
+            useCase.invoke()
+        }
 
         Assert.assertEquals(
             expected,
@@ -46,10 +63,10 @@ class GetProductUseCaseTest {
 }
 
 private val sampleProducts = listOf(
-    Product(
+    Voucher(
         code = "VOUCHER", name = "Cabify Voucher", price = BigDecimal.valueOf(5)
     ),
-    Product(
+    Tshirt(
         code = "TSHIRT", name = "Cabify T-Shirt", price = BigDecimal.valueOf(20)
     ),
     Product(
